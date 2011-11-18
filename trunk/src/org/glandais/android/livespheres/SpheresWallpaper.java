@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2009 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.glandais.android.livespheres;
 
 import java.util.List;
@@ -32,7 +16,6 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -56,8 +39,7 @@ public class SpheresWallpaper extends WallpaperService {
 		// SCALE_FACTOR = pixels / 1m
 		private float scaleFactor = 150.0f;
 
-		// private static final float SCALE_FACTOR = 200.0f;
-		// pixels
+		// Ball radius in pixels
 		private static final float BALL_RADIUS = 50.0f;
 
 		private PhysicsWorld mWorld;
@@ -190,15 +172,19 @@ public class SpheresWallpaper extends WallpaperService {
 			int rw = Math.max(width, height);
 			int rh = Math.min(width, height);
 
-			if (this.width != rw && this.height != rh) {
-				// DisplayMetrics metrics = new DisplayMetrics();
-				// getWindowManager().getDefaultDisplay().getMetrics(metrics);
-				// scaleFactor = 100.0f * (metrics.density / 2.54f);
-				// Log.i("Spheres", "scaleFactor = " + scaleFactor);
+			// int orientation = getOrientation();
+			// if (orientation == Surface.ROTATION_0 || orientation ==
+			// Surface.ROTATION_180) {
+			// rw = width;
+			// rh = height;
+			// } else {
+			// rw = height;
+			// rh = width;
+			// }
 
+			if (this.width != rw && this.height != rh) {
 				this.width = rw;
 				this.height = rh;
-				Log.i("Spheres", "width/height = " + width + "/" + height);
 				mWorld.recreateWorld(rw / scaleFactor, rh / scaleFactor);
 			}
 			drawFrame();
