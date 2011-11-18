@@ -15,7 +15,6 @@ import android.util.Log;
 
 public class PhysicsWorld {
 
-	// private static final float DENSITY_COEF = 10.0f;
 	public static final float FRAMERATE = 15;
 	public static final float TIME_STEP_SEC = (1f / FRAMERATE);
 	public static final int TIME_STEP_MS = Math.round(1000.0f / FRAMERATE);
@@ -40,10 +39,6 @@ public class PhysicsWorld {
 		BodyDef def = new BodyDef();
 		def.type = BodyType.STATIC;
 		Body groundBody = world.createBody(def);
-		// addBox(0, 0, xmax, 1, 0, false);
-		// addBox(xmax, 0, 1, ymax, 0, false);
-		// addBox(0, 0, xmax, 1, 0, false);
-		// addBox(0, 0, xmax, 1, 0, false);
 		createEdge(0.0f, 0.0f, xmax, 0.0f, groundBody);
 		createEdge(xmax, 0.0f, xmax, ymax, groundBody);
 		createEdge(xmax, ymax, 0.0f, ymax, groundBody);
@@ -59,13 +54,6 @@ public class PhysicsWorld {
 		groundShapeDef.setAsEdge(v1, v2);
 
 		groundBody.createFixture(groundShapeDef, 1.0f);
-
-		// FixtureDef fixtureDef = new FixtureDef();
-		// fixtureDef.density = 0f;
-		// // fixtureDef.friction = 0.5f;
-		// // fixtureDef.restitution = 0.5f;
-		// fixtureDef.shape = groundShapeDef;
-		// groundBody.createFixture(fixtureDef);
 	}
 
 	public void addBall(Vec2 position, float radius) {
@@ -79,15 +67,6 @@ public class PhysicsWorld {
 
 		CircleShape shape = new CircleShape();
 		shape.m_radius = radius;
-
-		/*
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.density = radius * radius * DENSITY_COEF;
-		// fixtureDef.friction = 0.0f;
-		// fixtureDef.restitution = 1.0f;
-		fixtureDef.shape = shape;
-		body.createFixture(fixtureDef);
-		*/
 
 		body.createFixture(shape, 1.0f);
 		body.resetMassData();
@@ -106,7 +85,6 @@ public class PhysicsWorld {
 	public void update() {
 		world.setContinuousPhysics(true);
 		world.setWarmStarting(true);
-		// Log.i("World", "World update");
 		world.step(TIME_STEP_SEC, VEL_ITER, POS_ITER);
 	}
 
