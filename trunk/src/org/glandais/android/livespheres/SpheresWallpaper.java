@@ -37,18 +37,18 @@ public class SpheresWallpaper extends WallpaperService {
 		private Application application;
 
 		// SCALE_FACTOR = pixels / 1m
-		private float scaleFactor = 150.0f;
+		private float scaleFactor = 40.0f;
 
-		// Ball radius in pixels
-		private static final float BALL_RADIUS = 50.0f;
+		// Ball radius in smallest side ratio
+		private static final float BALL_RADIUS = 0.11f;
 
 		private PhysicsWorld mWorld;
 
 		private final Handler mHandler = new Handler();
 
 		private final Paint mPaint = new Paint();
-		private int width = 800;
-		private int height = 600;
+		private int width = 1;
+		private int height = 1;
 
 		private boolean scheduled = false;
 		private SharedPreferences mPrefs;
@@ -59,7 +59,8 @@ public class SpheresWallpaper extends WallpaperService {
 				if (scheduled) {
 					mWorld.update();
 					drawFrame();
-					mHandler.postDelayed(mDrawCube, PhysicsWorld.TIME_STEP_MS);
+					mHandler.postDelayed(mDrawCube,
+							PhysicsWorld.DRAWFRAME_STEP_MS);
 				}
 			}
 		};
@@ -72,7 +73,7 @@ public class SpheresWallpaper extends WallpaperService {
 			final Paint paint = mPaint;
 			paint.setColor(0xff000000);
 			paint.setAntiAlias(true);
-			paint.setStrokeWidth(2);
+			paint.setStrokeWidth(5);
 			paint.setStrokeCap(Paint.Cap.ROUND);
 			paint.setStyle(Paint.Style.STROKE);
 
@@ -149,7 +150,6 @@ public class SpheresWallpaper extends WallpaperService {
 			return worldPos;
 		}
 
-		@Override
 		public void onSensorChanged(SensorEvent event) {
 			float sensorX = event.values[SensorManager.DATA_X];
 			float sensorY = event.values[SensorManager.DATA_Y];
@@ -157,10 +157,9 @@ public class SpheresWallpaper extends WallpaperService {
 			float xAxis = sensorY;
 			float yAxis = -sensorX;
 
-			mWorld.setGravity(xAxis, yAxis);
+			mWorld.setGravity(xAxis, yAxis, 4.0f);
 		}
 
-		@Override
 		public void onAccuracyChanged(Sensor sensor, int accuracy) {
 		}
 
@@ -182,10 +181,11 @@ public class SpheresWallpaper extends WallpaperService {
 			// rh = width;
 			// }
 
-			if (this.width != rw && this.height != rh) {
+			if (this.width != rw || this.height != rh) {
 				this.width = rw;
 				this.height = rh;
-				mWorld.recreateWorld(rw / scaleFactor, rh / scaleFactor);
+				mWorld.recreateWorld(rw / scaleFactor, rh / scaleFactor,
+						BALL_RADIUS);
 			}
 			drawFrame();
 		}
@@ -198,10 +198,24 @@ public class SpheresWallpaper extends WallpaperService {
 
 		@Override
 		public void onTouchEvent(MotionEvent event) {
+			// Log.i("World", "onTouchEvent " + event);
 			if (event.getAction() == MotionEvent.ACTION_UP) {
 				Vec2 worldPosition = toWorld(new Vec2(event.getX(),
 						event.getY()));
-				mWorld.addBall(worldPosition, BALL_RADIUS / scaleFactor);
+				// mWorld.touchUp(worldPosition);
+				mWorld.touch(worldPosition);
+			}
+			if (event.getAction() == MotionEvent.ACTION_DOWN) {
+				Vec2 worldPosition = toWorld(new Vec2(event.getX(),
+						event.getY()));
+				// mWorld.touchDown(worldPosition);
+				mWorld.touch(worldPosition);
+			}
+			if (event.getAction() == MotionEvent.ACTION_MOVE) {
+				Vec2 worldPosition = toWorld(new Vec2(event.getX(),
+						event.getY()));
+				// mWorld.touchMove(worldPosition);
+				mWorld.touch(worldPosition);
 			}
 			super.onTouchEvent(event);
 		}
@@ -226,7 +240,9 @@ public class SpheresWallpaper extends WallpaperService {
 
 			for (Body body : balls) {
 				Vec2 screenPos = toScreen(body.getPosition());
-				c.drawCircle(screenPos.x, screenPos.y, BALL_RADIUS, mPaint);
+				float radius = ((Float) body.getUserData()) * scaleFactor;
+				// Log.i("World", "Draw ball " + screenPos + " / " + radius);
+				c.drawCircle(screenPos.x, screenPos.y, radius, mPaint);
 			}
 		}
 
@@ -256,7 +272,7 @@ public class SpheresWallpaper extends WallpaperService {
 
 		private void schedule() {
 			scheduled = true;
-			mHandler.postDelayed(mDrawCube, PhysicsWorld.TIME_STEP_MS);
+			mHandler.postDelayed(mDrawCube, PhysicsWorld.DRAWFRAME_STEP_MS);
 			List<Sensor> sensors = getSensorManager().getSensorList(
 					Sensor.TYPE_ACCELEROMETER);
 			if (sensors.size() > 0) {
