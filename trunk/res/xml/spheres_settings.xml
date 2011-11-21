@@ -19,8 +19,8 @@
     android:key="spheres_settings"
     android:title="@string/spheres_settings" >
 
-    <EditTextPreference
-        android:key="spheres_number"
-        android:title="@string/spheres_settings_title" />
+    <Preference
+        android:key="background"
+        android:title="@string/spheres_settings_background" />
 
 </PreferenceScreen>
