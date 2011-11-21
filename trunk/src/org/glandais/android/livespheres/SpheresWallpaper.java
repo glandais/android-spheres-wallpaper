@@ -140,6 +140,21 @@ public class SpheresWallpaper extends WallpaperService {
 			}
 		}
 
+		public float angleToScreen(float worldAngle) {
+			int orientation = getOrientation();
+			float screenAngle = 0.0f;
+			if (orientation == Surface.ROTATION_0) {
+				screenAngle = -worldAngle - 90;
+			} else if (orientation == Surface.ROTATION_90) {
+				screenAngle = -worldAngle - 180;
+			} else if (orientation == Surface.ROTATION_180) {
+				screenAngle = -worldAngle - 270;
+			} else if (orientation == Surface.ROTATION_270) {
+				screenAngle = -worldAngle;
+			}
+			return screenAngle;
+		}
+
 		public Vec2 toScreen(Vec2 worldPos) {
 			int orientation = getOrientation();
 			Vec2 screenPos = new Vec2();
@@ -304,7 +319,7 @@ public class SpheresWallpaper extends WallpaperService {
 				matrix.reset();
 				matrix.postTranslate(-bitmap_ball.getWidth() / 2.0f,
 						-bitmap_ball.getHeight() / 2.0f);
-				matrix.postRotate(body.getAngle() * 57.296f);
+				matrix.postRotate(angleToScreen(body.getAngle() * 57.296f));
 				matrix.postScale(2.0f * radius / bitmap_ball.getWidth(), 2.0f
 						* radius / bitmap_ball.getHeight());
 				matrix.postTranslate(screenPos.x, screenPos.y);
@@ -314,7 +329,7 @@ public class SpheresWallpaper extends WallpaperService {
 				matrix.reset();
 				matrix.postTranslate(-bitmap_ball.getWidth() / 2.0f,
 						-bitmap_ball.getHeight() / 2.0f);
-				matrix.postRotate(shade_angle * 57.296f);
+				matrix.postRotate(angleToScreen(shade_angle * 57.296f));
 				matrix.postScale(2.0f * radius / bitmap_ball.getWidth(), 2.0f
 						* radius / bitmap_ball.getHeight());
 				matrix.postTranslate(screenPos.x, screenPos.y);
