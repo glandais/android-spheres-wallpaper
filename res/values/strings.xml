@@ -23,6 +23,6 @@
     <string name="wallpapers">Spheres</string>
     <string name="wallpaper_spheres">Spheres</string>
     <string name="spheres_settings">Settings</string>
-    <string name="spheres_settings_title">Number of spheres</string>
+    <string name="spheres_settings_background">Background</string>
 
 </resources>
