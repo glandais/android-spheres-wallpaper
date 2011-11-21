@@ -193,23 +193,23 @@ public class SpheresWallpaper extends WallpaperService {
 
 				mWorld.setGravity(xAxis, yAxis, 4.0f);
 			}
-			if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-				geomagneticMatrix = event.values.clone();
-				magneticOk = true;
-			}
+			// if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+			// geomagneticMatrix = event.values.clone();
+			// magneticOk = true;
+			// }
 
-			if (acceleroOk && magneticOk) {
-				float[] R = new float[16];
-				float[] I = new float[16];
-
-				SensorManager.getRotationMatrix(R, I, accelerometerValues,
-						geomagneticMatrix);
-
-				float[] actual_orientation = new float[3];
-				SensorManager.getOrientation(R, actual_orientation);
-
-				shade_angle = actual_orientation[2];
-			}
+			// if (acceleroOk && magneticOk) {
+			// float[] R = new float[16];
+			// float[] I = new float[16];
+			//
+			// SensorManager.getRotationMatrix(R, I, accelerometerValues,
+			// geomagneticMatrix);
+			//
+			// float[] actual_orientation = new float[3];
+			// SensorManager.getOrientation(R, actual_orientation);
+			//
+			// shade_angle = - actual_orientation[0];
+			// }
 		}
 
 		public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -347,11 +347,11 @@ public class SpheresWallpaper extends WallpaperService {
 			if (sensors.size() > 0) {
 				getSensorManager().unregisterListener(this, sensors.get(0));
 			}
-			sensors = getSensorManager().getSensorList(
-					Sensor.TYPE_MAGNETIC_FIELD);
-			if (sensors.size() > 0) {
-				getSensorManager().unregisterListener(this, sensors.get(0));
-			}
+			// sensors = getSensorManager().getSensorList(
+			// Sensor.TYPE_MAGNETIC_FIELD);
+			// if (sensors.size() > 0) {
+			// getSensorManager().unregisterListener(this, sensors.get(0));
+			// }
 
 		}
 
@@ -364,12 +364,12 @@ public class SpheresWallpaper extends WallpaperService {
 				getSensorManager().registerListener(this, sensors.get(0),
 						SensorManager.SENSOR_DELAY_UI);
 			}
-			sensors = getSensorManager().getSensorList(
-					Sensor.TYPE_MAGNETIC_FIELD);
-			if (sensors.size() > 0) {
-				getSensorManager().registerListener(this, sensors.get(0),
-						SensorManager.SENSOR_DELAY_UI);
-			}
+			// sensors = getSensorManager().getSensorList(
+			// Sensor.TYPE_MAGNETIC_FIELD);
+			// if (sensors.size() > 0) {
+			// getSensorManager().registerListener(this, sensors.get(0),
+			// SensorManager.SENSOR_DELAY_UI);
+			// }
 		}
 	}
 }
