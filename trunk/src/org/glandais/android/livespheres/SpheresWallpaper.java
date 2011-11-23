@@ -66,6 +66,7 @@ public class SpheresWallpaper extends WallpaperService {
 		private BitmapDrawable bitmap_background;
 		private Bitmap bitmap_ball;
 		private Bitmap bitmap_shade;
+		private Bitmap bitmap_shadow;
 
 		private final Runnable mDrawCube = new Runnable() {
 			public void run() {
@@ -100,6 +101,8 @@ public class SpheresWallpaper extends WallpaperService {
 					R.drawable.ball);
 			bitmap_shade = BitmapFactory.decodeResource(getResources(),
 					R.drawable.shade128);
+			bitmap_shadow = BitmapFactory.decodeResource(getResources(),
+					R.drawable.shadow);
 
 			mPrefs = SpheresWallpaper.this.getSharedPreferences(
 					SHARED_PREFS_NAME, MODE_PRIVATE);
@@ -311,11 +314,29 @@ public class SpheresWallpaper extends WallpaperService {
 			c.drawARGB(255, 255, 255, 255);
 			// }
 
+			Matrix matrix;
+
 			for (Body body : balls) {
 				Vec2 screenPos = toScreen(body.getPosition());
 				float radius = ((Float) body.getUserData()) * scaleFactor;
 
-				Matrix matrix = new Matrix();
+				matrix = new Matrix();
+				matrix.reset();
+				matrix.postTranslate(-bitmap_shadow.getWidth() / 2.0f,
+						-bitmap_shadow.getHeight() / 2.0f);
+				matrix.postRotate(angleToScreen(shade_angle * 57.296f));
+				matrix.postScale(
+						1.5f * 2.0f * radius / bitmap_shadow.getWidth(), 1.5f
+								* 2.0f * radius / bitmap_shadow.getHeight());
+				matrix.postTranslate(screenPos.x, screenPos.y);
+				c.drawBitmap(bitmap_shadow, matrix, bit_paint);
+			}
+
+			for (Body body : balls) {
+				Vec2 screenPos = toScreen(body.getPosition());
+				float radius = ((Float) body.getUserData()) * scaleFactor;
+
+				matrix = new Matrix();
 				matrix.reset();
 				matrix.postTranslate(-bitmap_ball.getWidth() / 2.0f,
 						-bitmap_ball.getHeight() / 2.0f);
