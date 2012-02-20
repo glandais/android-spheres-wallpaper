@@ -12,10 +12,23 @@
         android:icon="@drawable/ic_launcher_wallpaper"
         android:label="@string/wallpapers" >
         <service
+            android:name=".SpheresWallpaper"
             android:label="@string/wallpaper_spheres"
-            android:name="org.glandais.android.livespheres.SpheresWallpaper"
             android:permission="android.permission.BIND_WALLPAPER" >
-            <intent-filter >
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.service.wallpaper"
+                android:resource="@xml/spheres" />
+        </service>
+
+        <service
+            android:name=".opengl.SpheresWallpaper"
+            android:label="@string/spheresgl"
+            android:permission="android.permission.BIND_WALLPAPER" >
+            <intent-filter>
                 <action android:name="android.service.wallpaper.WallpaperService" />
             </intent-filter>
 
@@ -25,9 +38,9 @@
         </service>
 
         <activity
+            android:name="org.glandais.android.livespheres.SpheresWallpaperSettings"
             android:exported="true"
             android:label="@string/spheres_settings"
-            android:name="org.glandais.android.livespheres.SpheresWallpaperSettings"
             android:theme="@android:style/Theme.Light.WallpaperSettings" >
         </activity>
     </application>

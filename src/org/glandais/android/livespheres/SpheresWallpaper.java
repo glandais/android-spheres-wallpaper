@@ -52,17 +52,18 @@ public class SpheresWallpaper extends WallpaperService {
 
 		private final Handler mHandler = new Handler();
 
-		private final Paint mPaint = new Paint();
-		private final Paint bit_paint = new Paint();
-		// radians
-		private float shade_angle = 0.0f;
-
 		private int width = 1;
 		private int height = 1;
 
 		private boolean scheduled = false;
+
+		// radians
+		private float shade_angle = 0.0f;
+
 		private SharedPreferences mPrefs;
 
+		private final Paint mPaint = new Paint();
+		private final Paint bit_paint = new Paint();
 		private BitmapDrawable bitmap_background;
 		private Bitmap bitmap_ball;
 		private Bitmap bitmap_shade;
@@ -79,11 +80,6 @@ public class SpheresWallpaper extends WallpaperService {
 				}
 			}
 		};
-
-		private float[] accelerometerValues;
-		private float[] geomagneticMatrix;
-		private boolean acceleroOk = false;
-		private boolean magneticOk = false;
 
 		CubeEngine(Application application) {
 			this.application = application;
@@ -200,9 +196,6 @@ public class SpheresWallpaper extends WallpaperService {
 
 		public void onSensorChanged(SensorEvent event) {
 			if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-				accelerometerValues = event.values.clone();
-				acceleroOk = true;
-
 				float sensorX = event.values[SensorManager.DATA_X];
 				float sensorY = event.values[SensorManager.DATA_Y];
 
@@ -211,23 +204,6 @@ public class SpheresWallpaper extends WallpaperService {
 
 				mWorld.setGravity(xAxis, yAxis, 4.0f);
 			}
-			// if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-			// geomagneticMatrix = event.values.clone();
-			// magneticOk = true;
-			// }
-
-			// if (acceleroOk && magneticOk) {
-			// float[] R = new float[16];
-			// float[] I = new float[16];
-			//
-			// SensorManager.getRotationMatrix(R, I, accelerometerValues,
-			// geomagneticMatrix);
-			//
-			// float[] actual_orientation = new float[3];
-			// SensorManager.getOrientation(R, actual_orientation);
-			//
-			// shade_angle = - actual_orientation[0];
-			// }
 		}
 
 		public void onAccuracyChanged(Sensor sensor, int accuracy) {
@@ -240,16 +216,6 @@ public class SpheresWallpaper extends WallpaperService {
 
 			int rw = Math.max(width, height);
 			int rh = Math.min(width, height);
-
-			// int orientation = getOrientation();
-			// if (orientation == Surface.ROTATION_0 || orientation ==
-			// Surface.ROTATION_180) {
-			// rw = width;
-			// rh = height;
-			// } else {
-			// rw = height;
-			// rh = width;
-			// }
 
 			if (this.width != rw || this.height != rh) {
 				this.width = rw;
@@ -269,22 +235,11 @@ public class SpheresWallpaper extends WallpaperService {
 		@Override
 		public void onTouchEvent(MotionEvent event) {
 			// Log.i("World", "onTouchEvent " + event);
-			if (event.getAction() == MotionEvent.ACTION_UP) {
+			if (event.getAction() == MotionEvent.ACTION_UP
+					|| event.getAction() == MotionEvent.ACTION_DOWN
+					|| event.getAction() == MotionEvent.ACTION_MOVE) {
 				Vec2 worldPosition = toWorld(new Vec2(event.getX(),
 						event.getY()));
-				// mWorld.touchUp(worldPosition);
-				mWorld.touch(worldPosition);
-			}
-			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-				Vec2 worldPosition = toWorld(new Vec2(event.getX(),
-						event.getY()));
-				// mWorld.touchDown(worldPosition);
-				mWorld.touch(worldPosition);
-			}
-			if (event.getAction() == MotionEvent.ACTION_MOVE) {
-				Vec2 worldPosition = toWorld(new Vec2(event.getX(),
-						event.getY()));
-				// mWorld.touchMove(worldPosition);
 				mWorld.touch(worldPosition);
 			}
 			super.onTouchEvent(event);
@@ -383,12 +338,6 @@ public class SpheresWallpaper extends WallpaperService {
 			if (sensors.size() > 0) {
 				getSensorManager().unregisterListener(this, sensors.get(0));
 			}
-			// sensors = getSensorManager().getSensorList(
-			// Sensor.TYPE_MAGNETIC_FIELD);
-			// if (sensors.size() > 0) {
-			// getSensorManager().unregisterListener(this, sensors.get(0));
-			// }
-
 		}
 
 		private void schedule() {
@@ -400,12 +349,6 @@ public class SpheresWallpaper extends WallpaperService {
 				getSensorManager().registerListener(this, sensors.get(0),
 						SensorManager.SENSOR_DELAY_UI);
 			}
-			// sensors = getSensorManager().getSensorList(
-			// Sensor.TYPE_MAGNETIC_FIELD);
-			// if (sensors.size() > 0) {
-			// getSensorManager().registerListener(this, sensors.get(0),
-			// SensorManager.SENSOR_DELAY_UI);
-			// }
 		}
 	}
 }
