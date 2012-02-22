@@ -67,7 +67,7 @@ public class PhysicsWorld {
 			float y = (float) (ballsize + Math.random() * (ymax - ballsize));
 
 			Vec2 position = new Vec2(x, y);
-			addBall(position, ballsize);
+			addBall(position, ballsize * (0.9f + 0.2f * (float) Math.random()));
 		}
 
 	}
@@ -121,7 +121,7 @@ public class PhysicsWorld {
 		FixtureDef def = new FixtureDef();
 		def.density = 1.0f;
 		// 1 =
-		def.friction = 0.9f;
+		def.friction = 0.7f + 0.2f * (float) Math.random();
 		// 1 = rebond
 		def.restitution = 0.7f;
 		def.shape = shape;

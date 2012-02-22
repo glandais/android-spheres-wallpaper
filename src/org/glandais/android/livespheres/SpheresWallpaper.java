@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Sensor;
@@ -56,18 +57,9 @@ public class SpheresWallpaper extends WallpaperService {
 		private int height = 1;
 
 		private boolean scheduled = false;
-
-		// radians
-		private float shade_angle = 0.0f;
-
 		private SharedPreferences mPrefs;
 
 		private final Paint mPaint = new Paint();
-		private final Paint bit_paint = new Paint();
-		private BitmapDrawable bitmap_background;
-		private Bitmap bitmap_ball;
-		private Bitmap bitmap_shade;
-		private Bitmap bitmap_shadow;
 
 		private final Runnable mDrawCube = new Runnable() {
 			public void run() {
@@ -93,13 +85,6 @@ public class SpheresWallpaper extends WallpaperService {
 			paint.setStrokeCap(Paint.Cap.ROUND);
 			paint.setStyle(Paint.Style.STROKE);
 
-			bitmap_ball = BitmapFactory.decodeResource(getResources(),
-					R.drawable.ball);
-			bitmap_shade = BitmapFactory.decodeResource(getResources(),
-					R.drawable.shade128);
-			bitmap_shadow = BitmapFactory.decodeResource(getResources(),
-					R.drawable.shadow);
-
 			mPrefs = SpheresWallpaper.this.getSharedPreferences(
 					SHARED_PREFS_NAME, MODE_PRIVATE);
 			mPrefs.registerOnSharedPreferenceChangeListener(this);
@@ -110,10 +95,6 @@ public class SpheresWallpaper extends WallpaperService {
 				String key) {
 			String background = prefs.getString(KEY_BACKGROUND, null);
 			if (background != null) {
-				Bitmap bitmap = BitmapFactory.decodeFile(background);
-				bitmap_background = new BitmapDrawable(bitmap);
-				bitmap_background.setTileModeXY(Shader.TileMode.REPEAT,
-						Shader.TileMode.REPEAT);
 			}
 		}
 
@@ -269,50 +250,21 @@ public class SpheresWallpaper extends WallpaperService {
 			c.drawARGB(255, 255, 255, 255);
 			// }
 
-			Matrix matrix;
-
 			for (Body body : balls) {
 				Vec2 screenPos = toScreen(body.getPosition());
-				float radius = ((Float) body.getUserData()) * scaleFactor;
+				Float worldRadius = (Float) body.getUserData();
+				float screenRadius = worldRadius * scaleFactor;
 
-				matrix = new Matrix();
-				matrix.reset();
-				matrix.postTranslate(-bitmap_shadow.getWidth() / 2.0f,
-						-bitmap_shadow.getHeight() / 2.0f);
-				matrix.postRotate(angleToScreen(shade_angle * 57.296f));
-				matrix.postScale(
-						1.5f * 2.0f * radius / bitmap_shadow.getWidth(), 1.5f
-								* 2.0f * radius / bitmap_shadow.getHeight());
-				matrix.postTranslate(screenPos.x, screenPos.y);
-				c.drawBitmap(bitmap_shadow, matrix, bit_paint);
-			}
+				float bodyAngle = body.getAngle();
+				float xball = (float) (worldRadius * Math.cos(bodyAngle));
+				float yball = (float) (worldRadius * Math.sin(bodyAngle));
+				Vec2 point = body.getPosition().add(new Vec2(xball, yball));
+				Vec2 screenPos2 = toScreen(point);
 
-			for (Body body : balls) {
-				Vec2 screenPos = toScreen(body.getPosition());
-				float radius = ((Float) body.getUserData()) * scaleFactor;
-
-				matrix = new Matrix();
-				matrix.reset();
-				matrix.postTranslate(-bitmap_ball.getWidth() / 2.0f,
-						-bitmap_ball.getHeight() / 2.0f);
-				matrix.postRotate(angleToScreen(body.getAngle() * 57.296f));
-				matrix.postScale(2.0f * radius / bitmap_ball.getWidth(), 2.0f
-						* radius / bitmap_ball.getHeight());
-				matrix.postTranslate(screenPos.x, screenPos.y);
-				c.drawBitmap(bitmap_ball, matrix, bit_paint);
-
-				matrix = new Matrix();
-				matrix.reset();
-				matrix.postTranslate(-bitmap_ball.getWidth() / 2.0f,
-						-bitmap_ball.getHeight() / 2.0f);
-				matrix.postRotate(angleToScreen(shade_angle * 57.296f));
-				matrix.postScale(2.0f * radius / bitmap_ball.getWidth(), 2.0f
-						* radius / bitmap_ball.getHeight());
-				matrix.postTranslate(screenPos.x, screenPos.y);
-				c.drawBitmap(bitmap_shade, matrix, bit_paint);
-
-				// Log.i("World", "Draw ball " + screenPos + " / " + radius);
-				// c.drawCircle(screenPos.x, screenPos.y, radius, mPaint);
+				mPaint.setColor(0xff000000);
+				c.drawCircle(screenPos.x, screenPos.y, screenRadius, mPaint);
+				c.drawLine(screenPos.x, screenPos.y, screenPos2.x,
+						screenPos2.y, mPaint);
 			}
 		}
 
